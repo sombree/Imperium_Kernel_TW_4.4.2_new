@@ -338,7 +338,7 @@ inline static void target_freq(struct cpufreq_policy *policy,
 			// to ramp up to *at least* current + ramp_up_step.
 			if (new_freq > old_freq && prefered_relation == CPUFREQ_RELATION_H
 					&& !cpufreq_frequency_table_target(policy, table, new_freq,
-							CPUFREQ_RELATION_L, &index))
+							CPUFREQ_RELATION_C, &index))
 				target = table[index].frequency;
 			// simlarly for ramping down:
 			else if (new_freq < old_freq
@@ -1201,7 +1201,7 @@ static int cpufreq_governor_smartmax(struct cpufreq_policy *new_policy,
 		else if (this_smartmax->cur_policy->cur < new_policy->min) {
 			dprintk(SMARTMAX_DEBUG_JUMPS,"jumping to new min freq: %d\n",new_policy->min);
 			__cpufreq_driver_target(this_smartmax->cur_policy,
-					new_policy->min, CPUFREQ_RELATION_L);
+					new_policy->min, CPUFREQ_RELATION_C);
 		}
 		mutex_unlock(&this_smartmax->timer_mutex);
 		break;
