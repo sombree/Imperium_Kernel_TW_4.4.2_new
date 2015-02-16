@@ -35,6 +35,7 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/sd.h>
+#include <linux/stlog.h>
 
 #include "core.h"
 #include "bus.h"
@@ -962,7 +963,11 @@ void mmc_set_data_timeout(struct mmc_data *data, const struct mmc_card *card)
 	if (data->flags & MMC_DATA_WRITE)
 		mult <<= card->csd.r2w_factor;
 
-	data->timeout_ns = card->csd.tacc_ns * mult;
+	/* max time value is 4.2s */
+	if ((card->csd.tacc_ns/1000 * mult) > 4294967)
+		data->timeout_ns = 0xffffffff;
+	else
+		data->timeout_ns = card->csd.tacc_ns * mult;
 	data->timeout_clks = card->csd.tacc_clks * mult;
 
 	/*
@@ -2820,6 +2825,7 @@ int _mmc_detect_card_removed(struct mmc_host *host)
 	if (ret) {
 		mmc_card_set_removed(host->card);
 		pr_debug("%s: card remove detected\n", mmc_hostname(host));
+		ST_LOG("<%s> %s: card remove detected\n", __func__,mmc_hostname(host));
 	}
 
 	return ret;
@@ -2915,6 +2921,8 @@ void mmc_rescan(struct work_struct *work)
 
 	if (host->ops->get_cd && host->ops->get_cd(host) == 0)
 		goto out;
+
+	ST_LOG("<%s> %s insertion detected",__func__,host->class_dev.kobj.name);
 
 	mmc_claim_host(host);
 	if (!mmc_rescan_try_freq(host, host->f_min))

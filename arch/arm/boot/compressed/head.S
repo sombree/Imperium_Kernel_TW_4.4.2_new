@@ -421,10 +421,10 @@ wont_overwrite:
  *   sp  = stack pointer
  */
 		orrs	r1, r0, r5
-#ifndef CONFIG_CRYPTO_FIPS
-		beq	not_relocated
+#ifdef CONFIG_CRYPTO_FIPS
+		beq	not_relocated_copy
 #else
-        beq not_relocated_copy
+                beq     not_relocated
 #endif
 		add	r11, r11, r0
 		add	r12, r12, r0

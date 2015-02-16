@@ -147,6 +147,13 @@ void kgsl_trace_regwrite(struct kgsl_device *device, unsigned int offset,
 }
 EXPORT_SYMBOL(kgsl_trace_regwrite);
 
+void kgsl_trace_kgsl_tz_params(struct kgsl_device *device, s64 total_time,
+		 s64 busy_time, int idle_time, int tz_val) {
+
+       trace_kgsl_tz_params(device, total_time, busy_time, idle_time, tz_val);
+}
+EXPORT_SYMBOL(kgsl_trace_kgsl_tz_params);
+
 int kgsl_memfree_hist_init(void)
 {
 	void *base;
@@ -2945,7 +2952,7 @@ err_put:
 static inline bool
 mmap_range_valid(unsigned long addr, unsigned long len)
 {
-	return (addr + len) > addr && (addr + len) < TASK_SIZE;
+	return ((ULONG_MAX - addr) > len) && ((addr + len) < TASK_SIZE);
 }
 
 static unsigned long
