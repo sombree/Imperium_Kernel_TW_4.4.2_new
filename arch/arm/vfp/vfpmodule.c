@@ -21,6 +21,7 @@
 #include <linux/uaccess.h>
 #include <linux/user.h>
 #include <linux/proc_fs.h>
+#include <linux/export.h>
 
 #include <asm/cp15.h>
 #include <asm/cputype.h>
@@ -420,7 +421,7 @@ void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs)
 	 * If there isn't a second FP instruction, exit now. Note that
 	 * the FPEXC.FP2V bit is valid only if FPEXC.EX is 1.
 	 */
-	if (fpexc ^ (FPEXC_EX | FPEXC_FP2V))
+	if ((fpexc & (FPEXC_EX | FPEXC_FP2V)) != (FPEXC_EX | FPEXC_FP2V))
 		goto exit;
 
 	/*
@@ -748,9 +749,7 @@ static int __init vfp_init(void)
 {
 	unsigned int vfpsid;
 	unsigned int cpu_arch = cpu_architecture();
-#ifdef CONFIG_PROC_FS
-	static struct proc_dir_entry *procfs_entry;
-#endif
+
 	if (cpu_arch >= CPU_ARCH_ARMv6)
 		on_each_cpu(vfp_enable, NULL, 1);
 
@@ -837,8 +836,8 @@ static int __init vfp_rootfs_init(void)
 	else
 		pr_err("Failed to create procfs node for VFP bounce reporting\n");
 #endif
-
 	return 0;
 }
 
-late_initcall(vfp_init);
+core_initcall(vfp_init);
+rootfs_initcall(vfp_rootfs_init);
