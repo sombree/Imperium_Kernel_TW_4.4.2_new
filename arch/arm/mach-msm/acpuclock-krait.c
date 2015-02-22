@@ -38,10 +38,12 @@
 
 #include "acpuclock.h"
 #include "acpuclock-krait.h"
+#include "acpuclock-common.h"
 #include "avs.h"
 #ifdef CONFIG_SEC_DEBUG_DCVS_LOG
 #include <mach/sec_debug.h>
 #endif
+
 /* MUX source selects. */
 #define PRI_SRC_SEL_SEC_SRC	0
 #define PRI_SRC_SEL_HFPLL	1
@@ -987,7 +989,7 @@ void acpuclk_set_vdd(unsigned int khz, int vdd_uv) {
 }
 
 #ifdef CONFIG_CPU_FREQ_MSM
-static struct cpufreq_frequency_table freq_table[NR_CPUS][35];
+static struct cpufreq_frequency_table freq_table[NR_CPUS][FREQ_TABLE_SIZE];
 extern int console_batt_stat;
 static void __init cpufreq_table_init(void)
 {
