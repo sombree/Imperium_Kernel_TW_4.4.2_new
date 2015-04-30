@@ -44,12 +44,12 @@
  */
 
 #define DEF_FREQUENCY_DOWN_DIFFERENTIAL		(10)
-#define DEF_FREQUENCY_UP_THRESHOLD		(70)
+#define DEF_FREQUENCY_UP_THRESHOLD		(75)
 #define DEF_SAMPLING_DOWN_FACTOR		(1)
 #define BOOSTED_SAMPLING_DOWN_FACTOR		(10)
 #define MAX_SAMPLING_DOWN_FACTOR		(100000)
 #define MICRO_FREQUENCY_DOWN_DIFFERENTIAL	(3)
-#define MICRO_FREQUENCY_UP_THRESHOLD		(80)
+#define MICRO_FREQUENCY_UP_THRESHOLD		(75)
 #define MICRO_FREQUENCY_MIN_SAMPLE_RATE		(15000)
 #define MIN_FREQUENCY_UP_THRESHOLD		(11)
 #define MAX_FREQUENCY_UP_THRESHOLD		(100)
@@ -479,8 +479,7 @@ static void update_sampling_rate(unsigned int new_rate)
 {
 	int cpu;
 
-	dbs_tuners_ins.sampling_rate = new_rate
-				     = max(new_rate, min_sampling_rate);
+	dbs_tuners_ins.sampling_rate = max(new_rate, min_sampling_rate);
 
 	for_each_online_cpu(cpu) {
 		struct cpufreq_policy *policy;
@@ -527,6 +526,7 @@ static ssize_t store_sampling_rate(struct kobject *a, struct attribute *b,
 	if (ret != 1)
 		return -EINVAL;
 	update_sampling_rate(input);
+	pr_alert("STORE SAMPLING RATE %d-%d", input, dbs_tuners_ins.sampling_rate);
 	current_sampling_rate = dbs_tuners_ins.sampling_rate;
 	return count;
 }
@@ -1729,7 +1729,7 @@ static void dbs_input_event(struct input_handle *handle, unsigned int type,
 		}
 
 		if (current_sampling_rate > BOOSTED_SAMPLING_RATE) {
-			dbs_tuners_ins.sampling_rate = BOOSTED_SAMPLING_RATE;
+			//dbs_tuners_ins.sampling_rate = BOOSTED_SAMPLING_RATE;
 			sampling_rate_boosted_time = ktime_to_us(ktime_get());
 			sampling_rate_boosted = 1;
 		}
