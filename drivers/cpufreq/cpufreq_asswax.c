@@ -69,7 +69,7 @@ static unsigned int interactive_timeout = 2;
  * that practically when sleep_ideal_freq==0 the awake_ideal_freq is used
  * also when suspended).
  */
-static unsigned int sleep_ideal_freq = 384000;
+static unsigned int sleep_ideal_freq = 162000;
 
 /*
  * Freqeuncy delta when ramping up above the ideal freqeuncy.
